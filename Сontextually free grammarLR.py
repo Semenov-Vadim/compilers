@@ -177,11 +177,10 @@ print(c1.findLR())
 
 
 ##Пример №2
-'''
 c2= CFG(["alt"],["A","B"],"A",{"A":[["B"],["alt"]],
                                "B":[["alt"]]})
 ##print(c2.delWasteN())
 print(c2.findVanishN())
-'''
+print(c2.findLR())
 
 
