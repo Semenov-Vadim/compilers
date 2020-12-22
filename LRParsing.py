@@ -616,7 +616,7 @@ class CFG:
 ##-------------------------------------------------------------------------------
 
 '''Примеры '''
-c = CFG(["|",",","*","chr","nil"],["S","A","P"],"S",{"S":[["S","|","S"],["A"]],
+'''c = CFG(["|",",","*","chr","nil"],["S","A","P"],"S",{"S":[["S","|","S"],["A"]],
                                                      "A":[["A",",","A"],["P"]],
                                                      "P":[["P","*"],["chr"],["nil"]]})
    
@@ -626,7 +626,7 @@ print(c.P)
 print(c.LRParsing([c.S],["chr"]))                           ##True
 print(c.LRParsing([c.S],["chr","|","nil"]))                 ##True
 print(c.LRParsing([c.S],["chr","|","nil","|","nil","*"]))   ##True
-print(c.LRParsing([c.S],["chr","chr","chr"]))               ##False
+print(c.LRParsing([c.S],["chr","chr","chr"]))               ##False'''
 
 
 '''c1= CFG(["cat", "alt"],["A","F","E","D","K","B","W"],"A",{"K":[["A"]],
@@ -684,14 +684,14 @@ print(c4.P)
 c4.delWasteN()
 print(c4.P)'''
 
-'''c5= CFG(["c","a","b","d"],["S","A"],"S",{"S":[["c","A","d"]],
+c5= CFG(["c","a","b","d"],["S","A"],"S",{"S":[["c","A","d"]],
                                         "A":[["a","b"],["a"]]})
 
 c5.prepareLRParsing()
 print(c5.P)
 print(c5.LRParsing([c5.S],["c","a","d"]))
 print(c5.LRParsing([c5.S],["c","a","b","d"]))
-print(c5.LRParsing([c5.S],["c","a","b"]))'''
+print(c5.LRParsing([c5.S],["c","a","b"]))
 
 
 
