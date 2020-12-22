@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import copy
 import time
+##from collections import deque
+##from builtins import True
+
 
 print('''Обов'язково (20 балів). Побудуйте python-тулкіт для парсингу ліво-рекурсивним спуском, який забезпечить
 1) пошук і видалення сторонніх нетерміналів (на основі попередніх завдань)
@@ -542,7 +545,7 @@ class CFG:
         self.P = newP
         self.delEmpty()
         
-    
+    ##подготовка к лево-рекурсивному парсингу
     def prepareLRParsing(self):
         ##self.delWasteN()
         self.P = self.getGreibach()
@@ -551,10 +554,81 @@ class CFG:
             self.deleteLR()
         self.lFactorization()
     
-    def LRParsing(self):
-        pass
+    '''##этот метод нужен так как неходясь в рекурсии невозможно узнать если мы вернемся на шаг назад не закончится ли список myStack либо expectRes
+    ##т.е. LRParsing2 может возвращать либо True, если найдет заданую последовательность, либо None, если не найдет
+    ##этот дополнительный метод нужен только для красивого вывода и не более
+    def LRParsing(self, myStack: list, expectRes):
+        ##print(self.LRParsing2(myStack, expectRes))
+        if self.LRParsing2(myStack, expectRes) == True:
+            return True
+        else:
+            return False'''
     
+    
+    def LRParsing(self, myStack: list, expectRes):
+        if len(myStack) == 0 and len(expectRes) == 0:
+            ##print("TRUE")
+            return True
+        if len(myStack) == 0 or len(expectRes) == 0:
+            ##print("FALSE")
+            return False
+        ##заменяем нетерминант на последовательность, которую он выводит
+        if myStack[0].istitle():
+            for val in self.P[myStack[0]]:
+                newMyStack = []
+                for val2 in val:
+                    newMyStack.append(val2)
+                
+                newMyStack2 = copy.deepcopy(myStack)
+                newMyStack2.remove(myStack[0])
+                
+                for valStack in newMyStack2:
+                    newMyStack.append(valStack)
+                '''newMyStack = copy.deepcopy(myStack)
+                newMyStack.remove(myStack[0])
+                for val2 in val:
+                    newMyStack.append(val2)'''
+                ##print("newMyStack ",newMyStack)
+                if self.LRParsing(newMyStack,expectRes) == True:
+                    return True
+                    break
+                ##если вызов вернул не True, проверяем достигли ли мы конца 
+                elif val == self.P[myStack[0]][-1]:
+                    return False
+                    
+        else:
+            ##если нашли терминальный символ -> убираем его и продолжаем рекурсию
+            if myStack[0] == expectRes[0]:
+                ##print("found it ", myStack, " ", expectRes)
+                newMyStack = copy.deepcopy(myStack)
+                newMyStack.remove(myStack[0])
+                newExpectRes = copy.deepcopy(expectRes)
+                newExpectRes.remove(expectRes[0])
+                if self.LRParsing(newMyStack, newExpectRes) == True:
+                    return True
+            
+            ##найденый терминальный символ нам не подходит -> возвращаемся 
+            else:
+                ##print("ELSE ", myStack)
+                return False
+
+
+##-------------------------------------------------------------------------------
+
 '''Примеры '''
+c = CFG(["|",",","*","chr","nil"],["S","A","P"],"S",{"S":[["S","|","S"],["A"]],
+                                                     "A":[["A",",","A"],["P"]],
+                                                     "P":[["P","*"],["chr"],["nil"]]})
+   
+c.prepareLRParsing()
+print(c.P)
+
+print(c.LRParsing([c.S],["chr"]))                           ##True
+print(c.LRParsing([c.S],["chr","|","nil"]))                 ##True
+print(c.LRParsing([c.S],["chr","|","nil","|","nil","*"]))   ##True
+print(c.LRParsing([c.S],["chr","chr","chr"]))               ##False
+
+
 '''c1= CFG(["cat", "alt"],["A","F","E","D","K","B","W"],"A",{"K":[["A"]],
                                                           "A":[["cat", "alt"],['F'],["alt"]],
                                                           "F":[["alt"],["K", "alt"],["K"]], 
@@ -577,7 +651,7 @@ c2= CFG(["alt"],["A","B"],"A",{"A":[["B"],["alt"]],
 print(c2.findVanishN())
 print(c2.findLR())'''
 
-c3 = CFG(["alt", "e","com"], ["A", "B", "C", "D", "E", "F"], "A", {"A":[["B"], ["alt", "B","F"],["B","C"]],
+'''c3 = CFG(["alt", "e","com"], ["A", "B", "C", "D", "E", "F"], "A", {"A":[["B"], ["alt", "B","F"],["B","C"]],
                                                                    "B":[["e"]],
                                                                    "C":[["A", "B", "alt", "C", "D"], ["A", "B"],["alt"]],
                                                                    "D":[["A", "B", "alt"],["E"]],
@@ -592,18 +666,12 @@ c3 = CFG(["alt", "e","com"], ["A", "B", "C", "D", "E", "F"], "A", {"A":[["B"], [
 ##c3.lFactorization()
 ##c3.prepareLRParsing()
 ##print(c3.P)
-
 ##c3.deleteLRDirect()
 ##c3.P = c3.getGreibach() 
 ##c3.deleteLR()
-c3.prepareLRParsing()
-print(c3.P)
+##c3.prepareLRParsing()
+##print(c3.P)'''
 
-'''d = {"A":[["a"],["b"]],
-     "B":[["a"]]}
-
-d.update({("A"+str(1)):d["A"]}) 
-print(d)'''
 
 '''c4 = CFG(["alt"],["S","A","B","C"],"S",{"S":[["S"],["alt"],["A"],["B","C"]],
                                         "A":[["A"],["A","alt"]],
@@ -615,6 +683,15 @@ c4.P = c4.getGreibach()
 print(c4.P)
 c4.delWasteN()
 print(c4.P)'''
+
+'''c5= CFG(["c","a","b","d"],["S","A"],"S",{"S":[["c","A","d"]],
+                                        "A":[["a","b"],["a"]]})
+
+c5.prepareLRParsing()
+print(c5.P)
+print(c5.LRParsing([c5.S],["c","a","d"]))
+print(c5.LRParsing([c5.S],["c","a","b","d"]))
+print(c5.LRParsing([c5.S],["c","a","b"]))'''
 
 
 
